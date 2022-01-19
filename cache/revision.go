@@ -74,7 +74,7 @@ func (r *Revision) delRevision(id int64) error {
 	return err
 }
 
-func (r *Revision) NextRevisionLockFree(id int64) (int64, error) {
+func (r *Revision) nextRevision(id int64) (int64, error) {
 	exists, err := r.existRevision(id)
 	if err != nil {
 		return 0, err
@@ -87,16 +87,32 @@ func (r *Revision) NextRevisionLockFree(id int64) (int64, error) {
 }
 
 func (r *Revision) NextRevision(id int64) (int64, error) {
+	rev, err := r.nextRevision(id)
+	if err != nil {
+		return 0, err
+	}
+	if rev > 0 {
+		return rev, nil
+	}
+
 	m := NewMutex(fmt.Sprintf("NextRevision:%s:%d", r.name, id))
 	defer m.Close()
 
-	err := m.Lock()
+	err = m.Lock()
 	if err != nil {
 		return 0, err
 	}
 	defer m.Unlock()
 
-	rev, err := r.getRevision(id)
+	rev, err = r.nextRevision(id)
+	if err != nil {
+		return 0, err
+	}
+	if rev > 0 {
+		return rev, nil
+	}
+
+	rev, err = r.getRevision(id)
 	if err != nil {
 		return 0, err
 	}
