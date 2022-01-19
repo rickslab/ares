@@ -69,7 +69,7 @@ func (r *Revision) setRevisionNX(id int64, revision int64) error {
 	return err
 }
 
-func (r *Revision) delRevision(id int64) error {
+func (r *Revision) DelRevision(id int64) error {
 	_, err := r.conn.Do("DEL", id)
 	return err
 }
