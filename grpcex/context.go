@@ -22,6 +22,7 @@ type Context struct {
 	Method    string
 	Caller    string
 	RequestId string
+	ConnectId string
 	ClientIp  string
 	UserId    int64
 	Scope     string
@@ -38,6 +39,7 @@ func NewContext(ctx context.Context, service string, method string) *Context {
 	if ok {
 		c.Caller = getMeta(md, "caller")
 		c.RequestId = getMeta(md, "request_id")
+		c.ConnectId = getMeta(md, "connect_id")
 		c.ClientIp = getMeta(md, "client_ip")
 		userId := getMeta(md, "user_id")
 		if userId != "" {
@@ -54,6 +56,7 @@ func NewContext(ctx context.Context, service string, method string) *Context {
 		"method":     c.Method,
 		"caller":     c.Caller,
 		"request_id": c.RequestId,
+		"connect_id": c.ConnectId,
 		"client_ip":  c.ClientIp,
 		"user_id":    c.UserId,
 		"scope":      c.Scope,
@@ -63,6 +66,9 @@ func NewContext(ctx context.Context, service string, method string) *Context {
 
 func (c *Context) NewCtx(ctx context.Context) context.Context {
 	kv := []string{"caller", c.Service, "request_id", c.RequestId}
+	if c.ConnectId != "" {
+		kv = append(kv, "connect_id", c.ConnectId)
+	}
 	if c.ClientIp != "" {
 		kv = append(kv, "client_ip", c.ClientIp)
 	}
