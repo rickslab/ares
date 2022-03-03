@@ -24,14 +24,12 @@ func getFullMethod(c *gin.Context) string {
 func LogMW(service string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reqId := c.GetHeader("X-Request-Id")
-		connectId := c.GetHeader("X-Connect-Id")
 		clientIp := c.GetHeader("X-Real-IP")
 		userId := c.GetHeader("X-User-Id")
 		scope := c.GetHeader("X-Auth-Scope")
 
 		c.Set("MetaKv", []string{
 			"request_id", reqId,
-			"connect_id", connectId,
 			"client_ip", clientIp,
 			"user_id", userId,
 			"scope", scope,
@@ -40,7 +38,6 @@ func LogMW(service string) gin.HandlerFunc {
 
 		log := logger.NewEntry(c, map[string]interface{}{
 			"request_id": reqId,
-			"connect_id": connectId,
 			"client_ip":  clientIp,
 			"user_id":    userId,
 			"scope":      scope,

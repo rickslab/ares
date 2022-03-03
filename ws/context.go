@@ -39,14 +39,12 @@ func NewContext(r *http.Request, conn *websocket.Conn, service string, method st
 	}
 
 	reqId := r.Header.Get("X-Request-Id")
-	connectId := r.Header.Get("X-Connect-Id")
 	clientIp := r.Header.Get("X-Real-IP")
 	userId := r.Header.Get("X-User-Id")
 	scope := r.Header.Get("X-Auth-Scope")
 
 	c.logger = logger.NewEntry(c, map[string]interface{}{
 		"request_id": reqId,
-		"connect_id": connectId,
 		"client_ip":  clientIp,
 		"user_id":    userId,
 		"scope":      scope,
@@ -55,7 +53,6 @@ func NewContext(r *http.Request, conn *websocket.Conn, service string, method st
 	})
 	c.values["MetaKv"] = []string{
 		"request_id", reqId,
-		"connect_id", connectId,
 		"client_ip", clientIp,
 		"user_id", userId,
 		"scope", scope,
