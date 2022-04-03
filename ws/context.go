@@ -66,8 +66,8 @@ func NewContext(r *http.Request, conn *websocket.Conn, service string, method st
 func (c *Context) ReadMessage() (int, []byte, error) {
 	mt, data, err := c.conn.ReadMessage()
 	if err != nil {
-		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-			c.logger.Error("ReadMessage error", err)
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			c.logger.Errorf("ReadMessage error: %v", err)
 		}
 		return 0, nil, err
 	}
@@ -83,7 +83,7 @@ func (c *Context) writeLoop() {
 			err := c.conn.WriteMessage(msg.Type, msg.Data)
 			if err != nil {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-					c.logger.Error("WriteMessage error", err)
+					c.logger.Errorf("WriteMessage error: %v", err)
 				}
 				return
 			}
