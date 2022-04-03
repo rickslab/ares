@@ -82,7 +82,7 @@ func (c *Context) writeLoop() {
 		case msg := <-c.writeChan:
 			err := c.conn.WriteMessage(msg.Type, msg.Data)
 			if err != nil {
-				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 					c.logger.Errorf("WriteMessage error: %v", err)
 				}
 				return
