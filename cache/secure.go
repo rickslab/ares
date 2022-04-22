@@ -44,6 +44,6 @@ func (s *Secure) Failed() {
 
 	conn.Do("INCR", s.key)
 	if s.count == 0 {
-		conn.Do("EXPIRE", s.key, s.duration.Nanoseconds()/int64(time.Second), "NX")
+		conn.Do("EXPIRE", s.key, s.duration.Nanoseconds()/int64(time.Second))
 	}
 }
