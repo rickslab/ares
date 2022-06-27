@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/rickslab/ares/errcode"
 	"google.golang.org/grpc/status"
@@ -64,14 +63,14 @@ type QueryRow struct {
 	Highlight map[string][]string `json:"highlight"`
 }
 
-func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id int64, body interface{}) (*Result, error) {
+func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id string, body interface{}) (*Result, error) {
 	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
 	}
 
 	es := cli.Client
-	resp, err := es.Create(index, strconv.FormatInt(id, 10), doc, es.Create.WithContext(ctx))
+	resp, err := es.Create(index, id, doc, es.Create.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -89,9 +88,9 @@ func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id int
 	return result, nil
 }
 
-func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id int64) (*Result, error) {
+func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id string) (*Result, error) {
 	es := cli.Client
-	resp, err := es.Delete(index, strconv.FormatInt(id, 10), es.Delete.WithContext(ctx))
+	resp, err := es.Delete(index, id, es.Delete.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -112,14 +111,14 @@ func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id int
 	return result, nil
 }
 
-func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id int64, body interface{}) (*Result, error) {
+func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id string, body interface{}) (*Result, error) {
 	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
 	}
 
 	es := cli.Client
-	resp, err := es.Update(index, strconv.FormatInt(id, 10), doc, es.Update.WithContext(ctx))
+	resp, err := es.Update(index, id, doc, es.Update.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
