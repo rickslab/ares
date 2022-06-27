@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/rickslab/ares/errcode"
 	"google.golang.org/grpc/status"
@@ -63,14 +64,26 @@ type QueryRow struct {
 	Highlight map[string][]string `json:"highlight"`
 }
 
-func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id string, body interface{}) (*Result, error) {
+func getId(id interface{}) string {
+	switch val := id.(type) {
+	case uint64:
+		return strconv.FormatUint(val, 10)
+	case int64:
+		return strconv.FormatInt(val, 10)
+	case string:
+		return val
+	}
+	return fmt.Sprintf("%v", id)
+}
+
+func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id interface{}, body interface{}) (*Result, error) {
 	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
 	}
 
 	es := cli.Client
-	resp, err := es.Create(index, id, doc, es.Create.WithContext(ctx))
+	resp, err := es.Create(index, getId(id), doc, es.Create.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -88,9 +101,9 @@ func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id str
 	return result, nil
 }
 
-func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id string) (*Result, error) {
+func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id interface{}) (*Result, error) {
 	es := cli.Client
-	resp, err := es.Delete(index, id, es.Delete.WithContext(ctx))
+	resp, err := es.Delete(index, getId(id), es.Delete.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -111,14 +124,14 @@ func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id str
 	return result, nil
 }
 
-func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id string, body interface{}) (*Result, error) {
+func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id interface{}, body interface{}) (*Result, error) {
 	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
 	}
 
 	es := cli.Client
-	resp, err := es.Update(index, id, doc, es.Update.WithContext(ctx))
+	resp, err := es.Update(index, getId(id), doc, es.Update.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
