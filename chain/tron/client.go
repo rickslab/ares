@@ -5,8 +5,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -52,15 +50,9 @@ func (cli *TronClient) httpPost(path string, in interface{}, out interface{}) er
 	}
 	defer r.Body.Close()
 
-	resp, err := ioutil.ReadAll(r.Body)
+	err = json.NewDecoder(r.Body).Decode(out)
 	if err != nil {
-		return err
-	}
-	log.Printf("[TRON] POST %s \treq='%s'\tresp='%s'\n", url, req, resp)
-
-	err = json.Unmarshal(resp, out)
-	if err != nil {
-		logrus.Errorf("Tron api failed: url='POST%s' req='%s' resp='%s'", url, req, resp)
+		logrus.Errorf("Tron api failed: url='POST%s' req='%s'", url, req)
 		return err
 	}
 	return nil
@@ -76,15 +68,9 @@ func (cli *TronClient) httpGet(path string, in *url.Values, out interface{}) err
 	}
 	defer r.Body.Close()
 
-	resp, err := ioutil.ReadAll(r.Body)
+	err = json.NewDecoder(r.Body).Decode(out)
 	if err != nil {
-		return err
-	}
-	log.Printf("[TRON] GET %s \treq='%s'\tresp='%s'\n", url, req, resp)
-
-	err = json.Unmarshal(resp, out)
-	if err != nil {
-		logrus.Errorf("Tron api failed: url='GET%s' req='%s' resp='%s'", url, req, resp)
+		logrus.Errorf("Tron api failed: url='GET%s' req='%s'", url, req)
 		return err
 	}
 	return nil
