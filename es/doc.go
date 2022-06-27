@@ -8,19 +8,19 @@ import (
 	"reflect"
 )
 
-type DocType map[string]interface{}
+type Doc map[string]interface{}
 
 var (
 	errUnknownType = errors.New("unknown body type")
 )
 
-func GetDoc(body interface{}) (DocType, error) {
+func GetDoc(body interface{}) (Doc, error) {
 	val := reflect.ValueOf(body)
 	if val.Kind() == reflect.Map {
 		switch doc := body.(type) {
 		case map[string]interface{}:
 			return doc, nil
-		case DocType:
+		case Doc:
 			return doc, nil
 		default:
 			return nil, errUnknownType
