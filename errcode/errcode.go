@@ -26,9 +26,10 @@ const (
 )
 
 const (
-	_                 = 404000 + iota
-	ErrRecordNotFound // MySQL记录不存在
-	ErrValueNotFound  // Redis值不存在
+	_                  = 404000 + iota
+	ErrRecordNotFound  // MySQL记录不存在
+	ErrValueNotFound   // Redis值不存在
+	ErrElasticNotFound // Elastic返回不存在
 )
 
 const (

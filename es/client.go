@@ -22,9 +22,9 @@ func Client() *ElasticSearchClient {
 		conf := config.YamlEnv().Sub("elasticsearch")
 		cfg := elasticsearch.Config{
 			Addresses: []string{
-				conf.GetString("host"),
+				conf.GetString("address"),
 			},
-			Username: conf.GetString("user"),
+			Username: conf.GetString("username"),
 			Password: conf.GetString("password"),
 		}
 

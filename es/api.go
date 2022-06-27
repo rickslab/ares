@@ -3,7 +3,12 @@ package es
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"strconv"
+
+	"github.com/rickslab/ares/errcode"
+	"google.golang.org/grpc/status"
 )
 
 type Result struct {
@@ -12,7 +17,11 @@ type Result struct {
 	Id      string `json:"_id"`
 	Version int64  `json:"_version"`
 	Result  string `json:"result"` // created, deleted
-	Shards  struct {
+	Error   struct {
+		Type   string `json:"type"`
+		Reason string `json:"reason"`
+	} `json:"error"`
+	Shards struct {
 		Total      int64 `json:"total"`
 		Successful int64 `json:"successful"`
 		Failed     int64 `json:"failed"`
@@ -24,7 +33,11 @@ type Result struct {
 type QueryResult struct {
 	Took     int64 `json:"took"`
 	TimedOut bool  `json:"timed_out"`
-	Shards   struct {
+	Error    struct {
+		Type   string `json:"type"`
+		Reason string `json:"reason"`
+	} `json:"error"`
+	Shards struct {
 		Total      int64 `json:"total"`
 		Successful int64 `json:"successful"`
 		Failed     int64 `json:"failed"`
@@ -47,16 +60,18 @@ type QueryRow struct {
 	Type      string              `json:"_type"`
 	Id        string              `json:"_id"`
 	Score     float64             `json:"_score"`
-	Source    Doc                 `json:"_source"`
+	Source    Object              `json:"_source"`
 	Highlight map[string][]string `json:"highlight"`
 }
 
-func (cli *ElasticSearchClient) Create(index string, id int64, body interface{}) (*Result, error) {
-	doc, err := GetDocReader(body)
+func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id int64, body interface{}) (*Result, error) {
+	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := cli.Client.Create(index, strconv.FormatInt(id, 10), doc)
+
+	es := cli.Client
+	resp, err := es.Create(index, strconv.FormatInt(id, 10), doc, es.Create.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -64,11 +79,19 @@ func (cli *ElasticSearchClient) Create(index string, id int64, body interface{})
 
 	result := &Result{}
 	err = json.NewDecoder(resp.Body).Decode(result)
-	return result, err
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("es.Create failed[code=%d]: type=%s reason: %s", resp.StatusCode, result.Error.Type, result.Error.Reason)
+	}
+	return result, nil
 }
 
-func (cli *ElasticSearchClient) Delete(index string, id int64) (*Result, error) {
-	resp, err := cli.Client.Delete(index, strconv.FormatInt(id, 10))
+func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id int64) (*Result, error) {
+	es := cli.Client
+	resp, err := es.Delete(index, strconv.FormatInt(id, 10), es.Delete.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -76,15 +99,27 @@ func (cli *ElasticSearchClient) Delete(index string, id int64) (*Result, error) 
 
 	result := &Result{}
 	err = json.NewDecoder(resp.Body).Decode(result)
-	return result, err
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		if result.Result == "not_found" {
+			return nil, status.Error(errcode.ErrElasticNotFound, "elastic delete not found")
+		}
+		return nil, fmt.Errorf("es.Delete failed[code=%d]: type=%s reason: %s", resp.StatusCode, result.Error.Type, result.Error.Reason)
+	}
+	return result, nil
 }
 
-func (cli *ElasticSearchClient) Update(index string, id int64, body interface{}) (*Result, error) {
-	doc, err := GetDocReader(body)
+func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id int64, body interface{}) (*Result, error) {
+	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := cli.Client.Update(index, strconv.FormatInt(id, 10), doc)
+
+	es := cli.Client
+	resp, err := es.Update(index, strconv.FormatInt(id, 10), doc, es.Update.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -92,11 +127,18 @@ func (cli *ElasticSearchClient) Update(index string, id int64, body interface{})
 
 	result := &Result{}
 	err = json.NewDecoder(resp.Body).Decode(result)
-	return result, err
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("es.Update failed[code=%d]: type=%s reason: %s", resp.StatusCode, result.Error.Type, result.Error.Reason)
+	}
+	return result, nil
 }
 
 func (cli *ElasticSearchClient) Search(ctx context.Context, index string, query interface{}, from, size int) (*QueryResult, error) {
-	doc, err := GetDocReader(query)
+	doc, err := GetObjectReader(query)
 	if err != nil {
 		return nil, err
 	}
@@ -120,5 +162,8 @@ func (cli *ElasticSearchClient) Search(ctx context.Context, index string, query 
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("es.Search failed[code=%d]: type=%s reason: %s", resp.StatusCode, result.Error.Type, result.Error.Reason)
+	}
 	return result, nil
 }

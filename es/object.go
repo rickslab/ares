@@ -8,19 +8,19 @@ import (
 	"reflect"
 )
 
-type Doc map[string]interface{}
+type Object map[string]interface{}
 
 var (
 	errUnknownType = errors.New("unknown body type")
 )
 
-func GetDoc(body interface{}) (Doc, error) {
+func GetObject(body interface{}) (Object, error) {
 	val := reflect.ValueOf(body)
 	if val.Kind() == reflect.Map {
 		switch doc := body.(type) {
 		case map[string]interface{}:
 			return doc, nil
-		case Doc:
+		case Object:
 			return doc, nil
 		default:
 			return nil, errUnknownType
@@ -57,8 +57,8 @@ func GetDoc(body interface{}) (Doc, error) {
 	return nil, errUnknownType
 }
 
-func GetDocReader(body interface{}) (io.Reader, error) {
-	doc, err := GetDoc(body)
+func GetObjectReader(body interface{}) (io.Reader, error) {
+	doc, err := GetObject(body)
 	if err != nil {
 		return nil, err
 	}

@@ -61,3 +61,8 @@ session:
     session_key:
         - 9#BO$cn*h89lHh96CtOnDA!^bMT4@To^
     session_exp: 120
+
+elasticsearch:
+  address: http://192.168.2.12:9200
+  username: elastic
+  password: EZOqazpO9dNIQPt0gEXXnJBjDVW8X3iu

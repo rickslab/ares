@@ -74,7 +74,7 @@ func Yaml(name string) *viper.Viper {
 	if v != nil {
 		return v
 	}
-	return InitYaml(name, env.GetConfPath(), "../../conf")
+	return InitYaml(name, env.GetConfPath(), "../../conf", "./")
 }
 
 func YamlEnv() *viper.Viper {

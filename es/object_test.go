@@ -6,7 +6,7 @@ import (
 	"github.com/rickslab/ares/util"
 )
 
-func TestGetDoc(t *testing.T) {
+func TestGetObject(t *testing.T) {
 	a := struct {
 		Id   int64
 		Name string `es:"name"`
@@ -15,17 +15,17 @@ func TestGetDoc(t *testing.T) {
 		Name: "Rick",
 	}
 
-	doc, err := GetDoc(a)
+	obj, err := GetObject(a)
 	util.AssertErrorT(t, err)
-	util.AssertEqualT(t, doc["name"], "Rick")
+	util.AssertEqualT(t, obj["name"], "Rick")
 
 	b := map[string]interface{}{
 		"id":   123,
 		"name": "Rick",
 	}
 
-	doc, err = GetDoc(b)
+	obj, err = GetObject(b)
 	util.AssertErrorT(t, err)
-	util.AssertEqualT(t, doc["id"], 123)
-	util.AssertEqualT(t, doc["name"], "Rick")
+	util.AssertEqualT(t, obj["id"], 123)
+	util.AssertEqualT(t, obj["name"], "Rick")
 }
