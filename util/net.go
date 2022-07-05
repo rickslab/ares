@@ -13,7 +13,7 @@ func GetLocalAddr() string {
 
 	for _, address := range addrs {
 		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
+			if ipnet.IP.To4() != nil && ipnet.IP.IsGlobalUnicast() {
 				return ipnet.IP.String()
 			}
 		}
