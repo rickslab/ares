@@ -38,6 +38,10 @@ func NewSecure(key string, maxCount int, duration time.Duration) (*Secure, error
 	}, nil
 }
 
+func (s *Secure) Succeed() {
+	_, _ = Redis("secure").Do("DEL", s.key)
+}
+
 func (s *Secure) Failed() {
 	conn := Redis("secure").Get()
 	defer conn.Close()
