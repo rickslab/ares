@@ -9,7 +9,7 @@ const (
 	runes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789"
 )
 
-func InitRand() {
+func initRand() {
 	const mark int64 = ((1 << 32) - 1)
 	ns := time.Now().UnixNano()
 	high := (ns >> 32) & mark
