@@ -5,13 +5,11 @@ import (
 	"fmt"
 
 	"github.com/rickslab/ares/es"
-	"github.com/rickslab/ares/logger"
+	_ "github.com/rickslab/ares/logger"
 	"github.com/rickslab/ares/util"
 )
 
 func main() {
-	logger.Init()
-
 	ctx := context.Background()
 	cli := es.Client()
 

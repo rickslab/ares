@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/alicebob/miniredis/v2 v2.15.1
-	github.com/elastic/go-elasticsearch/v7 v7.17.1 // indirect
+	github.com/elastic/go-elasticsearch/v7 v7.17.1
 	github.com/ethereum/go-ethereum v1.10.8
 	github.com/fbsobreira/gotron-sdk v0.0.0-20210810183618-c8cf2a5f46d5
 	github.com/gin-contrib/sessions v0.0.3
