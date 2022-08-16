@@ -7,7 +7,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-type GetRevisionHandler func(id int64) (int64, error)
+type GetRevisionHandler func(id interface{}) (int64, error)
 
 type Revision struct {
 	name        string
@@ -26,17 +26,12 @@ func (r *Revision) Close() {
 	r.conn.Close()
 }
 
-func (r *Revision) existRevision(id int64) (bool, error) {
+func (r *Revision) existRevision(id interface{}) (bool, error) {
 	return redis.Bool(r.conn.Do("EXISTS", id))
 }
 
-func (r *Revision) mgetRevision(ids []int64) ([]int64, error) {
-	idis := make([]interface{}, len(ids))
-	for i, id := range ids {
-		idis[i] = id
-	}
-
-	strs, err := redis.Strings(r.conn.Do("MGET", idis...))
+func (r *Revision) mgetRevision(ids []interface{}) ([]int64, error) {
+	strs, err := redis.Strings(r.conn.Do("MGET", ids...))
 	if err != nil {
 		return nil, err
 	}
@@ -55,26 +50,26 @@ func (r *Revision) mgetRevision(ids []int64) ([]int64, error) {
 	return result, nil
 }
 
-func (r *Revision) incrRevision(id int64) (int64, error) {
+func (r *Revision) incrRevision(id interface{}) (int64, error) {
 	return redis.Int64(r.conn.Do("INCR", id))
 }
 
-func (r *Revision) setRevision(id int64, revision int64) error {
+func (r *Revision) setRevision(id interface{}, revision int64) error {
 	_, err := r.conn.Do("SET", id, revision)
 	return err
 }
 
-func (r *Revision) setRevisionNX(id int64, revision int64) error {
+func (r *Revision) setRevisionNX(id interface{}, revision int64) error {
 	_, err := r.conn.Do("SET", id, revision, "NX")
 	return err
 }
 
-func (r *Revision) DelRevision(id int64) error {
+func (r *Revision) DelRevision(id interface{}) error {
 	_, err := r.conn.Do("DEL", id)
 	return err
 }
 
-func (r *Revision) nextRevision(id int64) (int64, error) {
+func (r *Revision) nextRevision(id interface{}) (int64, error) {
 	exists, err := r.existRevision(id)
 	if err != nil {
 		return 0, err
@@ -86,7 +81,7 @@ func (r *Revision) nextRevision(id int64) (int64, error) {
 	return r.incrRevision(id)
 }
 
-func (r *Revision) NextRevision(id int64) (int64, error) {
+func (r *Revision) NextRevision(id interface{}) (int64, error) {
 	rev, err := r.nextRevision(id)
 	if err != nil {
 		return 0, err
@@ -95,7 +90,7 @@ func (r *Revision) NextRevision(id int64) (int64, error) {
 		return rev, nil
 	}
 
-	m := NewMutex(fmt.Sprintf("NextRevision:%s:%d", r.name, id))
+	m := NewMutex(fmt.Sprintf("NextRevision:%s:%v", r.name, id))
 	defer m.Close()
 
 	err = m.Lock()
@@ -122,13 +117,12 @@ func (r *Revision) NextRevision(id int64) (int64, error) {
 	return rev, nil
 }
 
-func (r *Revision) FindRevision(ids []int64) (map[int64]int64, error) {
+func (r *Revision) FindRevision(ids []interface{}) ([]int64, error) {
 	revisions, err := r.mgetRevision(ids)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make(map[int64]int64, len(ids))
 	for i, rev := range revisions {
 		id := ids[i]
 		if rev == -1 {
@@ -138,8 +132,8 @@ func (r *Revision) FindRevision(ids []int64) (map[int64]int64, error) {
 			}
 
 			_ = r.setRevisionNX(id, rev)
+			revisions[i] = rev
 		}
-		result[id] = rev
 	}
-	return result, nil
+	return revisions, nil
 }
