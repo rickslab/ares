@@ -62,11 +62,11 @@ func LogMW(service string) gin.HandlerFunc {
 		}
 
 		if code >= 200 && code < 400 {
-			log.WithFields(fields).Info("Access success")
+			log.WithFields(fields).Info("OK")
 		} else if code >= 400 && code < 500 {
-			log.WithFields(fields).Warn("Access denied: ", errMsg)
+			log.WithFields(fields).Warn(errMsg)
 		} else {
-			log.WithFields(fields).Error("Access failed: ", errMsg)
+			log.WithFields(fields).Error(errMsg)
 		}
 	}
 }
@@ -81,7 +81,7 @@ func RecoveryMW() gin.HandlerFunc {
 			if ret := recover(); ret != nil {
 				GetLogger(c).WithFields(logrus.Fields{
 					"stack": string(debug.Stack()),
-				}).Error("Recover panic", ret)
+				}).Fatal(ret)
 
 				c.AbortWithStatus(http.StatusServiceUnavailable)
 			}

@@ -81,11 +81,11 @@ func LogUSI() grpc.UnaryServerInterceptor {
 		fields["code"] = code
 
 		if code == 0 {
-			c.Logger.WithFields(fields).Info("Access success")
+			c.Logger.WithFields(fields).Info("OK")
 		} else if failed {
-			c.Logger.WithFields(fields).Error("Access failed: ", err)
+			c.Logger.WithFields(fields).Error(err)
 		} else {
-			c.Logger.WithFields(fields).Warn("Access denied: ", err)
+			c.Logger.WithFields(fields).Warn(err)
 		}
 		return resp, err
 	}
@@ -98,7 +98,7 @@ func RecoveryUSI() grpc.UnaryServerInterceptor {
 				stack := string(debug.Stack())
 				GetLogger(ctx).WithFields(logrus.Fields{
 					"stack": stack,
-				}).Error("Recover panic", ret)
+				}).Fatal(ret)
 
 				if retErr, ok := ret.(error); ok {
 					err = retErr
