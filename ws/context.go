@@ -131,6 +131,10 @@ func (c *Context) Done() <-chan struct{} {
 	return c.ctx.Done()
 }
 
+func (c *Context) Close() error {
+	return c.conn.Close()
+}
+
 func (c *Context) Err() error {
 	return c.ctx.Err()
 }
