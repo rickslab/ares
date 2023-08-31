@@ -10,16 +10,16 @@ require (
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.3
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/google/uuid v1.1.5
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.1
 	github.com/hashicorp/consul/api v1.24.0
 	github.com/influxdata/influxdb-client-go/v2 v2.5.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
-	github.com/nsqio/go-nsq v1.0.8
+	github.com/nsqio/go-nsq v1.1.0
 	github.com/pion/stun v0.3.5
 	github.com/pion/turn/v2 v2.0.5
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
@@ -30,7 +30,7 @@ require (
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.30
 	github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20210824072546-568579d0d307
 	go.mongodb.org/mongo-driver v1.7.2
-	google.golang.org/grpc v1.40.0
+	google.golang.org/grpc v1.57.0
 	gorm.io/driver/mysql v1.1.2
 	gorm.io/driver/sqlite v1.1.6
 	gorm.io/gorm v1.21.16

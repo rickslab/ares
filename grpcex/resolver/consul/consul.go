@@ -21,7 +21,7 @@ func (cb *consulBuilder) Build(target resolver.Target, cc resolver.ClientConn, o
 	log.Printf("Consul build target: %v\n", target)
 
 	config := api.DefaultConfig()
-	config.Address = target.Authority
+	config.Address = target.URL.Host
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -30,7 +30,7 @@ func (cb *consulBuilder) Build(target resolver.Target, cc resolver.ClientConn, o
 
 	cr := &consulResolver{
 		client:    client,
-		name:      target.Endpoint,
+		name:      target.Endpoint(),
 		cc:        cc,
 		lastIndex: 0,
 	}

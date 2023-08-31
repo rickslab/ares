@@ -11,6 +11,7 @@ import (
 	"github.com/rickslab/ares/util"
 	"google.golang.org/grpc"
 	_ "google.golang.org/grpc/balancer/roundrobin"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -23,9 +24,10 @@ var (
 )
 
 func Dial(address string, balancer string, mws ...grpc.UnaryClientInterceptor) (*grpc.ClientConn, error) {
+	serverConfig := fmt.Sprintf(`{"loadBalancingConfig": [{"%s": {}}]}`, balancer)
 	return grpc.Dial(address,
-		grpc.WithInsecure(),
-		grpc.WithBalancerName(balancer),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultServiceConfig(serverConfig),
 		grpc.WithChainUnaryInterceptor(mws...),
 		grpc.WithInitialWindowSize(defaultWindowSize),
 		grpc.WithInitialConnWindowSize(defaultWindowSize),
