@@ -5,17 +5,21 @@ import (
 	"time"
 )
 
+type TestType int32
+
 type test1 struct {
 	A int64
 	B string
 	C time.Time `xcopy:"Unix"`
 	D string    `xcopy:"-"`
+	E int32     `xcopy:"int"`
 }
 
 type test2 struct {
 	A int64
 	B string
 	C int64
+	E TestType
 }
 
 func TestXcopyStruce(t *testing.T) {
@@ -24,6 +28,7 @@ func TestXcopyStruce(t *testing.T) {
 		B: "Hello",
 		C: time.Unix(10000, 0),
 		D: "World",
+		E: 1,
 	}
 	var t2 *test2
 	Xcopy(&t2, t1)

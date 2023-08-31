@@ -8,7 +8,7 @@ require (
 	github.com/ethereum/go-ethereum v1.10.8
 	github.com/fbsobreira/gotron-sdk v0.0.0-20210810183618-c8cf2a5f46d5
 	github.com/gin-contrib/sessions v0.0.3
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/gomodule/redigo v2.0.0+incompatible
