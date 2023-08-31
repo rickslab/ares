@@ -15,7 +15,7 @@ require (
 	github.com/google/uuid v1.1.5
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
-	github.com/hashicorp/consul/api v1.10.1
+	github.com/hashicorp/consul/api v1.24.0
 	github.com/influxdata/influxdb-client-go/v2 v2.5.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
