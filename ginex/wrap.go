@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin/render"
 )
 
-func getResultIfExists(obj interface{}) interface{} {
+func getResultIfExists(obj any) any {
 	val := reflect.ValueOf(obj)
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
@@ -26,7 +26,7 @@ func getResultIfExists(obj interface{}) interface{} {
 	return obj
 }
 
-func Wrap(f func(*gin.Context) (interface{}, error)) gin.HandlerFunc {
+func Wrap(f func(*gin.Context) (any, error)) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		obj, err := f(c)
 		if err != nil {

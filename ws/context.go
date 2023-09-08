@@ -18,7 +18,7 @@ type Context struct {
 	logger    *logrus.Entry
 	ctx       context.Context
 	cancel    context.CancelFunc
-	values    map[interface{}]interface{}
+	values    map[any]any
 	mu        sync.RWMutex
 }
 
@@ -35,7 +35,7 @@ func NewContext(r *http.Request, conn *websocket.Conn, service string, method st
 		writeChan: make(chan *message),
 		ctx:       ctx,
 		cancel:    cancel,
-		values:    make(map[interface{}]interface{}),
+		values:    make(map[any]any),
 	}
 
 	reqId := r.Header.Get("X-Request-Id")
@@ -43,7 +43,7 @@ func NewContext(r *http.Request, conn *websocket.Conn, service string, method st
 	userId := r.Header.Get("X-User-Id")
 	scope := r.Header.Get("X-Auth-Scope")
 
-	c.logger = logger.NewEntry(c, map[string]interface{}{
+	c.logger = logger.NewEntry(c, map[string]any{
 		"request_id": reqId,
 		"client_ip":  clientIp,
 		"user_id":    userId,
@@ -139,14 +139,14 @@ func (c *Context) Err() error {
 	return c.ctx.Err()
 }
 
-func (c *Context) Value(key interface{}) interface{} {
+func (c *Context) Value(key any) any {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
 	return c.values[key]
 }
 
-func (c *Context) Set(key, value interface{}) {
+func (c *Context) Set(key, value any) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 

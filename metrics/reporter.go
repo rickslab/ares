@@ -53,7 +53,7 @@ func ReportInfluxDBV2(service string) {
 func report(r metrics.Registry, org string, bucket string, tags map[string]string) {
 	w := client.WriteAPI(org, bucket)
 
-	r.Each(func(name string, i interface{}) {
+	r.Each(func(name string, i any) {
 		measurement, otherTags := getMeasurementAndTags(name)
 		p := influxdb2.NewPointWithMeasurement(measurement)
 		for k, v := range tags {

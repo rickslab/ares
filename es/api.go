@@ -64,7 +64,7 @@ type QueryRow struct {
 	Highlight map[string][]string `json:"highlight"`
 }
 
-func getId(id interface{}) string {
+func getId(id any) string {
 	switch val := id.(type) {
 	case uint64:
 		return strconv.FormatUint(val, 10)
@@ -76,7 +76,7 @@ func getId(id interface{}) string {
 	return fmt.Sprintf("%v", id)
 }
 
-func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id interface{}, body interface{}) (*Result, error) {
+func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id any, body any) (*Result, error) {
 	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func (cli *ElasticSearchClient) Create(ctx context.Context, index string, id int
 	return result, nil
 }
 
-func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id interface{}) (*Result, error) {
+func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id any) (*Result, error) {
 	es := cli.Client
 	resp, err := es.Delete(index, getId(id), es.Delete.WithContext(ctx))
 	if err != nil {
@@ -124,7 +124,7 @@ func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id int
 	return result, nil
 }
 
-func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id interface{}, body interface{}) (*Result, error) {
+func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id any, body any) (*Result, error) {
 	doc, err := GetObjectReader(body)
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func (cli *ElasticSearchClient) Update(ctx context.Context, index string, id int
 	return result, nil
 }
 
-func (cli *ElasticSearchClient) Search(ctx context.Context, index string, query interface{}, from, size int) (*QueryResult, error) {
+func (cli *ElasticSearchClient) Search(ctx context.Context, index string, query any, from, size int) (*QueryResult, error) {
 	doc, err := GetObjectReader(query)
 	if err != nil {
 		return nil, err

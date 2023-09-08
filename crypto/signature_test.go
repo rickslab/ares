@@ -5,7 +5,7 @@ import (
 )
 
 func TestSignature(t *testing.T) {
-	payload := map[string]interface{}{
+	payload := map[string]any{
 		"a":   100,
 		"b":   "Rick",
 		"abc": "{}",

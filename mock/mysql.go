@@ -16,7 +16,7 @@ func InitMysqlCli() *gorm.DB {
 	return db
 }
 
-func InitModel(models ...interface{}) {
+func InitModel(models ...any) {
 	db := store.MySQL("write")
 
 	db.Migrator().DropTable(models)

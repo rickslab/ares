@@ -36,7 +36,7 @@ func Client(apiUrl string, feeLimit uint64) *TronClient {
 	}
 }
 
-func (cli *TronClient) httpPost(path string, in interface{}, out interface{}) error {
+func (cli *TronClient) httpPost(path string, in any, out any) error {
 	url := cli.apiUrl + path
 
 	req, err := json.Marshal(in)
@@ -58,7 +58,7 @@ func (cli *TronClient) httpPost(path string, in interface{}, out interface{}) er
 	return nil
 }
 
-func (cli *TronClient) httpGet(path string, in *url.Values, out interface{}) error {
+func (cli *TronClient) httpGet(path string, in *url.Values, out any) error {
 	url := cli.apiUrl + path
 	req := in.Encode()
 

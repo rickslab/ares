@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func NewEntry(ctx context.Context, fields map[string]interface{}) *logrus.Entry {
+func NewEntry(ctx context.Context, fields map[string]any) *logrus.Entry {
 	return logrus.WithContext(ctx).WithFields(fields)
 }
 

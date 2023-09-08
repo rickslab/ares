@@ -34,7 +34,7 @@ func NewRedisClient(addr, password, db string) *RedisClient {
 	}
 }
 
-func (cli *RedisClient) Do(cmd string, args ...interface{}) (interface{}, error) {
+func (cli *RedisClient) Do(cmd string, args ...any) (any, error) {
 	conn := cli.Pool.Get()
 	defer conn.Close()
 

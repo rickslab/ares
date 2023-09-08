@@ -31,7 +31,7 @@ func (r *Revision) existRevision(id int64) (bool, error) {
 }
 
 func (r *Revision) mgetRevision(ids []int64) ([]int64, error) {
-	vals := make([]interface{}, len(ids))
+	vals := make([]any, len(ids))
 	for i, id := range ids {
 		vals[i] = id
 	}

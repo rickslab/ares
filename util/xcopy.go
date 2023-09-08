@@ -111,7 +111,7 @@ func xcopySlice(dstPtr reflect.Value, src reflect.Value) {
 // Xcopy copy src to dst of different type
 //  1. Values of different struct
 //  2. Slices of different element struct
-func Xcopy(dst interface{}, src interface{}) interface{} {
+func Xcopy(dst any, src any) any {
 	if src == nil {
 		return dst
 	}

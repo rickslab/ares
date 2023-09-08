@@ -145,7 +145,7 @@ func bindUSDT(address common.Address, caller bind.ContractCaller, transactor bin
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_USDT *USDTRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+func (_USDT *USDTRaw) Call(opts *bind.CallOpts, result *[]any, method string, params ...any) error {
 	return _USDT.Contract.USDTCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_USDT *USDTRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, err
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_USDT *USDTRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+func (_USDT *USDTRaw) Transact(opts *bind.TransactOpts, method string, params ...any) (*types.Transaction, error) {
 	return _USDT.Contract.USDTTransactor.contract.Transact(opts, method, params...)
 }
 
@@ -164,7 +164,7 @@ func (_USDT *USDTRaw) Transact(opts *bind.TransactOpts, method string, params ..
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_USDT *USDTCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+func (_USDT *USDTCallerRaw) Call(opts *bind.CallOpts, result *[]any, method string, params ...any) error {
 	return _USDT.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,7 +175,7 @@ func (_USDT *USDTTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transa
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_USDT *USDTTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+func (_USDT *USDTTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...any) (*types.Transaction, error) {
 	return _USDT.Contract.contract.Transact(opts, method, params...)
 }
 
@@ -183,7 +183,7 @@ func (_USDT *USDTTransactorRaw) Transact(opts *bind.TransactOpts, method string,
 //
 // Solidity: function balanceOf(address _owner) view returns(uint256 balance)
 func (_USDT *USDTCaller) BalanceOf(opts *bind.CallOpts, _owner common.Address) (*big.Int, error) {
-	var out []interface{}
+	var out []any
 	err := _USDT.contract.Call(opts, &out, "balanceOf", _owner)
 
 	if err != nil {
@@ -214,7 +214,7 @@ func (_USDT *USDTCallerSession) BalanceOf(_owner common.Address) (*big.Int, erro
 //
 // Solidity: function balances(address ) view returns(uint256)
 func (_USDT *USDTCaller) Balances(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var out []interface{}
+	var out []any
 	err := _USDT.contract.Call(opts, &out, "balances", arg0)
 
 	if err != nil {
@@ -245,7 +245,7 @@ func (_USDT *USDTCallerSession) Balances(arg0 common.Address) (*big.Int, error) 
 //
 // Solidity: function name() view returns(string)
 func (_USDT *USDTCaller) Name(opts *bind.CallOpts) (string, error) {
-	var out []interface{}
+	var out []any
 	err := _USDT.contract.Call(opts, &out, "name")
 
 	if err != nil {
@@ -276,7 +276,7 @@ func (_USDT *USDTCallerSession) Name() (string, error) {
 //
 // Solidity: function owner() view returns(address)
 func (_USDT *USDTCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
+	var out []any
 	err := _USDT.contract.Call(opts, &out, "owner")
 
 	if err != nil {
@@ -307,7 +307,7 @@ func (_USDT *USDTCallerSession) Owner() (common.Address, error) {
 //
 // Solidity: function symbol() view returns(string)
 func (_USDT *USDTCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var out []interface{}
+	var out []any
 	err := _USDT.contract.Call(opts, &out, "symbol")
 
 	if err != nil {
@@ -590,11 +590,11 @@ type USDTTransfer struct {
 // Solidity: event Transfer(address indexed from, address indexed to, uint256 amount)
 func (_USDT *USDTFilterer) FilterTransfer(opts *bind.FilterOpts, from []common.Address, to []common.Address) (*USDTTransferIterator, error) {
 
-	var fromRule []interface{}
+	var fromRule []any
 	for _, fromItem := range from {
 		fromRule = append(fromRule, fromItem)
 	}
-	var toRule []interface{}
+	var toRule []any
 	for _, toItem := range to {
 		toRule = append(toRule, toItem)
 	}
@@ -611,11 +611,11 @@ func (_USDT *USDTFilterer) FilterTransfer(opts *bind.FilterOpts, from []common.A
 // Solidity: event Transfer(address indexed from, address indexed to, uint256 amount)
 func (_USDT *USDTFilterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *USDTTransfer, from []common.Address, to []common.Address) (event.Subscription, error) {
 
-	var fromRule []interface{}
+	var fromRule []any
 	for _, fromItem := range from {
 		fromRule = append(fromRule, fromItem)
 	}
-	var toRule []interface{}
+	var toRule []any
 	for _, toItem := range to {
 		toRule = append(toRule, toItem)
 	}

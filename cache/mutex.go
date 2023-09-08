@@ -116,7 +116,7 @@ func (m *Mutex) Unlock() error {
 	return nil
 }
 
-func MutexWrap(key string, f func() (interface{}, error)) (reply interface{}, err error) {
+func MutexWrap(key string, f func() (any, error)) (reply any, err error) {
 	m := NewMutex(key)
 	defer m.Close()
 

@@ -22,7 +22,7 @@ var (
 )
 
 func ContextUCI() grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		switch c := ctx.(type) {
 		case *gin.Context:
 			kv := c.MustGet("MetaKv").([]string)
@@ -37,7 +37,7 @@ func ContextUCI() grpc.UnaryClientInterceptor {
 }
 
 func TimeoutUCI(timeout time.Duration) grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		newCtx, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
 
@@ -50,7 +50,7 @@ func TimeoutUCI(timeout time.Duration) grpc.UnaryClientInterceptor {
 }
 
 func ContextUSI() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		subs := regFullMethod.FindStringSubmatch(info.FullMethod)
 		if len(subs) != 3 {
 			return handler(ctx, req)
@@ -62,7 +62,7 @@ func ContextUSI() grpc.UnaryServerInterceptor {
 }
 
 func LogUSI() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		c := GetContext(ctx)
 		if c.Service == "grpc.health.v1.Health" {
 			return handler(ctx, req)
@@ -72,7 +72,7 @@ func LogUSI() grpc.UnaryServerInterceptor {
 		resp, err := handler(ctx, req)
 		dur := time.Since(ts)
 
-		fields := map[string]interface{}{
+		fields := map[string]any{
 			"req":     req,
 			"latency": dur.Seconds() * 1000, // ms
 		}
@@ -92,7 +92,7 @@ func LogUSI() grpc.UnaryServerInterceptor {
 }
 
 func RecoveryUSI() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 		defer func() {
 			if ret := recover(); ret != nil {
 				stack := string(debug.Stack())
@@ -112,7 +112,7 @@ func RecoveryUSI() grpc.UnaryServerInterceptor {
 }
 
 func MetricsUSI() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		c := GetContext(ctx)
 		if c.Service == "grpc.health.v1.Health" {
 			return handler(ctx, req)
@@ -136,14 +136,14 @@ func MetricsUSI() grpc.UnaryServerInterceptor {
 }
 
 func ErrorMapUSI() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		resp, err := handler(ctx, req)
 		return resp, errcode.ErrorMap(err)
 	}
 }
 
 func RequestBindUSI(caller string) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		c := GetContext(ctx)
 		if c.Caller == caller {
 			c.Bind(req)

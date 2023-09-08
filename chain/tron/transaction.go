@@ -119,7 +119,7 @@ func (tx *Transaction) GetData() *chain.Data {
 
 func (cli *TronClient) CreateTransaction(ownerAddress string, toAddress string, amount *big.Int) (*Transaction, error) {
 	tx := Transaction{}
-	err := cli.httpPost("/wallet/createtransaction", map[string]interface{}{
+	err := cli.httpPost("/wallet/createtransaction", map[string]any{
 		"owner_address": ownerAddress,
 		"to_address":    toAddress,
 		"amount":        amount,
@@ -152,7 +152,7 @@ func (cli *TronClient) Broadcast(tx *Transaction) error {
 
 func (cli *TronClient) GetTransactionById(id string) (*Transaction, error) {
 	tx := Transaction{}
-	err := cli.httpPost("/wallet/gettransactionbyid", map[string]interface{}{
+	err := cli.httpPost("/wallet/gettransactionbyid", map[string]any{
 		"value":   id,
 		"visible": true,
 	}, &tx)

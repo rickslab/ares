@@ -16,7 +16,7 @@ func (cli *TronClient) TriggerSmartContract(ownerAddress string, contract string
 		Tx     Transaction `json:"transaction"`
 		Result Result      `json:"result"`
 	}{}
-	err := cli.httpPost("/wallet/triggersmartcontract", map[string]interface{}{
+	err := cli.httpPost("/wallet/triggersmartcontract", map[string]any{
 		"owner_address":     ownerAddress,
 		"contract_address":  contract,
 		"function_selector": selector,
@@ -39,7 +39,7 @@ func (cli *TronClient) TriggerConstantContract(contract string, selector string,
 		ConstantResult []string `json:"constant_result"`
 		Result         Result   `json:"result"`
 	}{}
-	err := cli.httpPost("/wallet/triggerconstantcontract", map[string]interface{}{
+	err := cli.httpPost("/wallet/triggerconstantcontract", map[string]any{
 		"owner_address":     emptyAddress,
 		"contract_address":  contract,
 		"function_selector": selector,

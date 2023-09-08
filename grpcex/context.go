@@ -77,7 +77,7 @@ func (c *Context) NewCtx(ctx context.Context) context.Context {
 	return context.WithValue(ctx, grpcCtxKey, c)
 }
 
-func (c *Context) Bind(req interface{}) {
+func (c *Context) Bind(req any) {
 	r := reflect.ValueOf(req)
 	if r.Kind() == reflect.Ptr {
 		r = r.Elem()

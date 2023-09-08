@@ -7,7 +7,7 @@ import (
 )
 
 func WaitSignal(sigs ...os.Signal) {
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, sigs...)
 	<-c
 }

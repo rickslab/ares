@@ -93,7 +93,7 @@ func (p *chashPicker) Pick(info balancer.PickInfo) (balancer.PickResult, error) 
 	return balancer.PickResult{SubConn: p.nodes[0].subConn}, nil
 }
 
-func WithChashKey(ctx context.Context, key interface{}) context.Context {
+func WithChashKey(ctx context.Context, key any) context.Context {
 	return context.WithValue(ctx, chashCtxKey, key)
 }
 

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func Sign(url string, key string, payload map[string]interface{}) {
+func Sign(url string, key string, payload map[string]any) {
 	now := time.Now()
 	payload["timestamp"] = now.Unix()
 
@@ -20,7 +20,7 @@ func Sign(url string, key string, payload map[string]interface{}) {
 	payload["sign"] = sign
 }
 
-func SignCheck(url string, key string, payload map[string]interface{}) error {
+func SignCheck(url string, key string, payload map[string]any) error {
 	timestamp, ok := payload["timestamp"]
 	if !ok {
 		return errors.New("no timestamp")

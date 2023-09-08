@@ -14,7 +14,7 @@ type TransactionInfo struct {
 
 func (cli *TronClient) GetTransactionInfoById(id string) (*TransactionInfo, error) {
 	ti := TransactionInfo{}
-	err := cli.httpPost("/wallet/gettransactioninfobyid", map[string]interface{}{
+	err := cli.httpPost("/wallet/gettransactioninfobyid", map[string]any{
 		"value":   id,
 		"visible": true,
 	}, &ti)

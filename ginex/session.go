@@ -79,7 +79,7 @@ func RedisSessionMW(redisConfKey string, sessionConfKey string) gin.HandlerFunc 
 func AuthorizeMW(authHandler func(c *gin.Context, accessToken string) (*AuthInfo, error)) gin.HandlerFunc {
 	log.Println("Use Authorize Middleware")
 
-	return Wrap(func(c *gin.Context) (interface{}, error) {
+	return Wrap(func(c *gin.Context) (any, error) {
 		s := sessions.Default(c)
 		ai := s.Get("AuthInfo")
 		if ai == nil {

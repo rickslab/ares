@@ -8,17 +8,17 @@ import (
 	"reflect"
 )
 
-type Object map[string]interface{}
+type Object map[string]any
 
 var (
 	errUnknownType = errors.New("unknown body type")
 )
 
-func GetObject(body interface{}) (Object, error) {
+func GetObject(body any) (Object, error) {
 	val := reflect.ValueOf(body)
 	if val.Kind() == reflect.Map {
 		switch doc := body.(type) {
-		case map[string]interface{}:
+		case map[string]any:
 			return doc, nil
 		case Object:
 			return doc, nil
@@ -32,7 +32,7 @@ func GetObject(body interface{}) (Object, error) {
 	}
 
 	if val.Kind() == reflect.Struct {
-		doc := map[string]interface{}{}
+		doc := map[string]any{}
 		typ := val.Type()
 		for i := 0; i < typ.NumField(); i++ {
 			fieldType := typ.Field(i)
@@ -57,7 +57,7 @@ func GetObject(body interface{}) (Object, error) {
 	return nil, errUnknownType
 }
 
-func GetObjectReader(body interface{}) (io.Reader, error) {
+func GetObjectReader(body any) (io.Reader, error) {
 	doc, err := GetObject(body)
 	if err != nil {
 		return nil, err

@@ -19,7 +19,7 @@ func TestGetObject(t *testing.T) {
 	util.AssertErrorT(t, err)
 	util.AssertEqualT(t, obj["name"], "Rick")
 
-	b := map[string]interface{}{
+	b := map[string]any{
 		"id":   123,
 		"name": "Rick",
 	}

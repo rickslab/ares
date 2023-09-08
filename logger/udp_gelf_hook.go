@@ -20,7 +20,7 @@ func (hook *UdpGelfHook) Levels() []logrus.Level {
 }
 
 func (hook *UdpGelfHook) Fire(entry *logrus.Entry) error {
-	payload := map[string]interface{}{
+	payload := map[string]any{
 		"version":       "1.1",
 		"host":          hook.host,
 		"timestamp":     time.Now().Unix(),

@@ -8,7 +8,7 @@ import (
 )
 
 type HandlerInvoker interface {
-	Invoke(c *gin.Context) (interface{}, error)
+	Invoke(c *gin.Context) (any, error)
 }
 
 func Bind(val HandlerInvoker) gin.HandlerFunc {
@@ -17,7 +17,7 @@ func Bind(val HandlerInvoker) gin.HandlerFunc {
 		t = t.Elem()
 	}
 
-	return Wrap(func(c *gin.Context) (interface{}, error) {
+	return Wrap(func(c *gin.Context) (any, error) {
 		v := reflect.New(t)
 		if err := c.ShouldBind(v.Interface()); err != nil {
 			return nil, Error(errcode.ErrGinBind, err.Error())

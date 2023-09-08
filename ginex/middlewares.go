@@ -36,7 +36,7 @@ func LogMW(service string) gin.HandlerFunc {
 			"caller", service,
 		})
 
-		log := logger.NewEntry(c, map[string]interface{}{
+		log := logger.NewEntry(c, map[string]any{
 			"request_id": reqId,
 			"client_ip":  clientIp,
 			"user_id":    userId,
@@ -51,7 +51,7 @@ func LogMW(service string) gin.HandlerFunc {
 		dur := time.Since(ts)
 		code := c.Writer.Status()
 
-		fields := map[string]interface{}{
+		fields := map[string]any{
 			"latency": dur.Seconds() * 1000, // ms
 			"code":    code,
 		}

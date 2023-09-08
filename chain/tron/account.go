@@ -9,7 +9,7 @@ type Account struct {
 
 func (cli *TronClient) GetAccount(b58Address string) (*Account, error) {
 	acc := Account{}
-	err := cli.httpPost("/wallet/getaccount", map[string]interface{}{
+	err := cli.httpPost("/wallet/getaccount", map[string]any{
 		"address": b58Address,
 		"visible": "true",
 	}, &acc)

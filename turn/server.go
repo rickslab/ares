@@ -69,7 +69,7 @@ func NewTurnServer(confKey string, publicIp string) *TurnServer {
 	}
 }
 
-func (s *TurnServer) CreateAccessPoint(username string) (map[string]interface{}, error) {
+func (s *TurnServer) CreateAccessPoint(username string) (map[string]any, error) {
 	password := crypto.Sha1Hash(util.RandomString(64))
 	key := turn.GenerateAuthKey(username, s.Realm, password)
 	_, err := cache.Redis("turn").Do("SET", username, key, "EX", s.TTL)
@@ -77,7 +77,7 @@ func (s *TurnServer) CreateAccessPoint(username string) (map[string]interface{},
 		return nil, err
 	}
 
-	return map[string]interface{}{
+	return map[string]any{
 		"url":        fmt.Sprintf("turn:%s?transport=udp", s.PublicAddress),
 		"username":   username,
 		"credential": password,
@@ -85,7 +85,7 @@ func (s *TurnServer) CreateAccessPoint(username string) (map[string]interface{},
 }
 
 func (s *TurnServer) RouteApi(g *gin.RouterGroup) {
-	g.POST("turn", ginex.Wrap(func(c *gin.Context) (interface{}, error) {
+	g.POST("turn", ginex.Wrap(func(c *gin.Context) (any, error) {
 		authInfo := ginex.GetAuthInfo(c)
 		return s.CreateAccessPoint(fmt.Sprintf("u%d", authInfo.UserId))
 	}))

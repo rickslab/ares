@@ -35,14 +35,14 @@ func DeferredPublish(topic string, delay time.Duration, body []byte) error {
 	return getProducer().DeferredPublish(topic, delay, body)
 }
 
-func PublishJSON(topic string, value interface{}) error {
+func PublishJSON(topic string, value any) error {
 	data, err := json.Marshal(value)
 	util.AssertError(err)
 
 	return Publish(topic, data)
 }
 
-func DeferredPublishJSON(topic string, delay time.Duration, value interface{}) error {
+func DeferredPublishJSON(topic string, delay time.Duration, value any) error {
 	data, err := json.Marshal(value)
 	util.AssertError(err)
 
