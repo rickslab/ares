@@ -121,3 +121,12 @@ func GetContext(ctx context.Context) *Context {
 func GetLogger(ctx context.Context) *logrus.Entry {
 	return GetContext(ctx).Logger
 }
+
+func WrapFunc(ctx context.Context, f func() error) func() {
+	return func() {
+		err := f()
+		if err != nil {
+			GetLogger(ctx).Errorf("WrapFunc failed! %v", err)
+		}
+	}
+}
