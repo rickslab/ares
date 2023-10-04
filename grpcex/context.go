@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/rickslab/ares/logger"
@@ -122,9 +123,22 @@ func GetLogger(ctx context.Context) *logrus.Entry {
 	return GetContext(ctx).Logger
 }
 
-func WrapFunc(ctx context.Context, f func() error) func() {
+func WrapFunc(f func(ctx context.Context) error) func() {
 	return func() {
-		err := f()
+		ctx := context.Background()
+		err := f(ctx)
+		if err != nil {
+			GetLogger(ctx).Errorf("WrapFunc failed! %v", err)
+		}
+	}
+}
+
+func WrapFuncWithTimeout(f func(ctx context.Context) error, timeout time.Duration) func() {
+	return func() {
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		err := f(ctx)
 		if err != nil {
 			GetLogger(ctx).Errorf("WrapFunc failed! %v", err)
 		}
