@@ -107,6 +107,28 @@ func (c *Context) Bind(req any) {
 	}
 }
 
+func (c *Context) WrapFunc(f func(ctx context.Context) error) func() {
+	return func() {
+		ctx := c.NewCtx(context.Background())
+		err := f(ctx)
+		if err != nil {
+			GetLogger(ctx).Errorf("WrapFunc failed! %v", err)
+		}
+	}
+}
+
+func (c *Context) WrapFuncWithTimeout(f func(ctx context.Context) error, timeout time.Duration) func() {
+	return func() {
+		ctx, cancel := context.WithTimeout(c.NewCtx(context.Background()), timeout)
+		defer cancel()
+
+		err := f(ctx)
+		if err != nil {
+			GetLogger(ctx).Errorf("WrapFunc failed! %v", err)
+		}
+	}
+}
+
 func getMeta(md metadata.MD, key string) string {
 	vals := md.Get(key)
 	if len(vals) == 0 || vals[0] == "" {
@@ -121,26 +143,4 @@ func GetContext(ctx context.Context) *Context {
 
 func GetLogger(ctx context.Context) *logrus.Entry {
 	return GetContext(ctx).Logger
-}
-
-func WrapFunc(f func(ctx context.Context) error) func() {
-	return func() {
-		ctx := context.Background()
-		err := f(ctx)
-		if err != nil {
-			GetLogger(ctx).Errorf("WrapFunc failed! %v", err)
-		}
-	}
-}
-
-func WrapFuncWithTimeout(f func(ctx context.Context) error, timeout time.Duration) func() {
-	return func() {
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-
-		err := f(ctx)
-		if err != nil {
-			GetLogger(ctx).Errorf("WrapFunc failed! %v", err)
-		}
-	}
 }
