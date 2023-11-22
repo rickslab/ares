@@ -115,8 +115,8 @@ func (c *Context) Cancel() {
 	c.cancel()
 }
 
-func (c *Context) GetHeader(key string) string {
-	return c.request.Header.Get(key)
+func (c *Context) GetRequest() *http.Request {
+	return c.request
 }
 
 func (c *Context) Logger() *logrus.Entry {

@@ -91,7 +91,7 @@ func (s *Server) Register(name string, address string, port int) {
 }
 
 type Handler interface {
-	Open(c *Context, pattern string) error
+	Open(c *Context) error
 	Close(c *Context)
 	Receive(c *Context, mt int, data []byte) error
 }
@@ -128,7 +128,7 @@ func (s *Server) Handle(pattern string, h Handler) {
 			}
 		}()
 
-		err = h.Open(c, pattern)
+		err = h.Open(c)
 		if err != nil {
 			logger.Error("Open error", err)
 			return
