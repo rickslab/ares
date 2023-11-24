@@ -58,6 +58,7 @@ func NewContext(r *http.Request, conn *websocket.Conn, service string, method st
 		"scope", scope,
 		"caller", service,
 	}
+	c.values["UserId"] = userId
 
 	go c.writeLoop()
 	return c
