@@ -47,6 +47,8 @@ func xcopy(dstPtr reflect.Value, src reflect.Value) {
 		switch tag {
 		case "int":
 			dstField.SetInt(srcField.Int())
+		case "b2s":
+			dstField.SetString(string(srcField.Bytes()))
 		case "":
 			dstField.Set(srcField)
 		default:

@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -165,4 +166,22 @@ func TestXcopyMethod(t *testing.T) {
 	AssertEqualT(t, t2.A, int64(300))
 	AssertEqualT(t, t2.B, "Golang")
 	AssertEqualT(t, t2.C, int64(1001))
+}
+
+type test4 struct {
+	A []byte `xcopy:"b2s"`
+}
+
+type test4str struct {
+	A string
+}
+
+func TestXcopyBlobToString(t *testing.T) {
+	t4 := &test4{
+		A: []byte("Hello"),
+	}
+
+	t4str := Xcopy(&test4str{}, t4).(*test4str)
+	fmt.Printf("t4str=%v\n", t4str.A)
+	AssertEqualT(t, t4str.A, "Hello")
 }
