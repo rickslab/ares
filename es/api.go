@@ -6,9 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/rickslab/ares/errcode"
-	"google.golang.org/grpc/status"
 )
 
 type Result struct {
@@ -117,7 +114,7 @@ func (cli *ElasticSearchClient) Delete(ctx context.Context, index string, id any
 
 	if resp.StatusCode != http.StatusOK {
 		if result.Result == "not_found" {
-			return nil, status.Error(errcode.ErrElasticNotFound, "elastic delete not found")
+			return result, nil
 		}
 		return nil, fmt.Errorf("es.Delete failed[code=%d]: type=%s reason: %s", resp.StatusCode, result.Error.Type, result.Error.Reason)
 	}
