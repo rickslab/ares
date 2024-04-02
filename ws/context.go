@@ -11,6 +11,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	healthCheckInterval = 20 * time.Second
+)
+
 type Context struct {
 	request   *http.Request
 	conn      *websocket.Conn
@@ -77,6 +81,9 @@ func (c *Context) ReadMessage() (int, []byte, error) {
 }
 
 func (c *Context) writeLoop() {
+	ticker := time.NewTicker(healthCheckInterval)
+	defer ticker.Stop()
+
 	for {
 		select {
 		case msg := <-c.writeChan:
@@ -84,6 +91,14 @@ func (c *Context) writeLoop() {
 			if err != nil {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 					c.logger.Errorf("WriteMessage error: %v", err)
+				}
+				return
+			}
+		case <-ticker.C:
+			err := c.conn.WriteMessage(websocket.PingMessage, nil)
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					c.logger.Errorf("WritePingMessage error: %v", err)
 				}
 				return
 			}

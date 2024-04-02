@@ -19,9 +19,8 @@ import (
 )
 
 const (
-	readLimit           = 64 * 1024
-	healthCheckInterval = 30 * time.Second
-	watchInterval       = 10 * time.Second
+	readLimit     = 64 * 1024
+	watchInterval = 10 * time.Second
 )
 
 type Server struct {
@@ -113,11 +112,11 @@ func (s *Server) Handle(pattern string, h Handler) {
 		defer c.Cancel()
 
 		conn.SetReadLimit(readLimit)
-		conn.SetReadDeadline(time.Now().Add(healthCheckInterval))
+		/*conn.SetReadDeadline(time.Now().Add(healthCheckInterval))
 		conn.SetPingHandler(func(data string) error {
 			c.WriteMessage(websocket.PongMessage, []byte(data))
 			return conn.SetReadDeadline(time.Now().Add(healthCheckInterval))
-		})
+		})*/
 
 		logger := c.Logger()
 		defer func() {
@@ -127,6 +126,11 @@ func (s *Server) Handle(pattern string, h Handler) {
 				}).Error("Recover panic", ret)
 			}
 		}()
+
+		conn.SetPongHandler(func(data string) error {
+			logger.Trace("Pong", data)
+			return nil
+		})
 
 		err = h.Open(c)
 		if err != nil {
