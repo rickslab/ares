@@ -82,6 +82,8 @@ func (c *Context) writeLoop() {
 	ticker := time.NewTicker(healthCheckInterval)
 	defer ticker.Stop()
 
+	c.writePing()
+
 	for {
 		select {
 		case msg := <-c.writeChan:
@@ -93,16 +95,20 @@ func (c *Context) writeLoop() {
 				return
 			}
 		case <-ticker.C:
-			err := c.conn.WriteMessage(websocket.PingMessage, nil)
-			if err != nil {
-				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-					c.logger.Errorf("WritePingMessage error: %v", err)
-				}
-				return
-			}
+			c.writePing()
 		case <-c.ctx.Done():
 			return
 		}
+	}
+}
+
+func (c *Context) writePing() {
+	err := c.conn.WriteMessage(websocket.PingMessage, nil)
+	if err != nil {
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			c.logger.Errorf("writePing error: %v", err)
+		}
+		return
 	}
 }
 

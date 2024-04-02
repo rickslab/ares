@@ -122,11 +122,6 @@ func (s *Server) Handle(pattern string, h Handler) {
 			}
 		}()
 
-		conn.SetPongHandler(func(data string) error {
-			logger.Trace("Pong", data)
-			return nil
-		})
-
 		err = h.Open(c)
 		if err != nil {
 			logger.Error("Open error", err)
