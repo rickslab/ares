@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	healthCheckInterval = 20 * time.Second
+	healthCheckInterval = time.Minute
 )
 
 type Context struct {

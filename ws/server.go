@@ -112,18 +112,13 @@ func (s *Server) Handle(pattern string, h Handler) {
 		defer c.Cancel()
 
 		conn.SetReadLimit(readLimit)
-		/*conn.SetReadDeadline(time.Now().Add(healthCheckInterval))
-		conn.SetPingHandler(func(data string) error {
-			c.WriteMessage(websocket.PongMessage, []byte(data))
-			return conn.SetReadDeadline(time.Now().Add(healthCheckInterval))
-		})*/
 
 		logger := c.Logger()
 		defer func() {
 			if ret := recover(); ret != nil {
 				logger.WithFields(logrus.Fields{
 					"stack": string(debug.Stack()),
-				}).Error("Recover panic", ret)
+				}).Error(ret)
 			}
 		}()
 
@@ -147,7 +142,9 @@ func (s *Server) Handle(pattern string, h Handler) {
 		for {
 			msgType, data, err := c.ReadMessage()
 			if err != nil {
-				logger.Errorf("ReadMessage error: %v", err)
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					logger.Errorf("ReadMessage error: %v", err)
+				}
 				return
 			}
 

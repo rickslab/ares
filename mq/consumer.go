@@ -55,10 +55,9 @@ func (c *Consumer) StartConsumer(topic string, f func(ctx context.Context, m *ns
 		defer func() {
 			log := grpcex.GetLogger(ctx)
 			if ret := recover(); ret != nil {
-				stack := string(debug.Stack())
 				log.WithFields(logrus.Fields{
-					"stack": stack,
-				}).Error("Recover panic", ret)
+					"stack": string(debug.Stack()),
+				}).Error(ret)
 
 				if retErr, ok := ret.(error); ok {
 					err = retErr

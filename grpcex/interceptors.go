@@ -95,9 +95,8 @@ func RecoveryUSI() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 		defer func() {
 			if ret := recover(); ret != nil {
-				stack := string(debug.Stack())
 				GetLogger(ctx).WithFields(logrus.Fields{
-					"stack": stack,
+					"stack": string(debug.Stack()),
 				}).Fatal(ret)
 
 				if retErr, ok := ret.(error); ok {
