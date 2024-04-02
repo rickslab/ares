@@ -147,6 +147,7 @@ func (s *Server) Handle(pattern string, h Handler) {
 		for {
 			msgType, data, err := c.ReadMessage()
 			if err != nil {
+				logger.Error("ReadMessage error", err)
 				return
 			}
 
