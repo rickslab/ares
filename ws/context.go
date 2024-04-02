@@ -75,8 +75,6 @@ func (c *Context) ReadMessage() (int, []byte, error) {
 		}
 		return 0, nil, err
 	}
-
-	c.conn.SetReadDeadline(time.Now().Add(healthCheckInterval))
 	return mt, data, nil
 }
 

@@ -147,13 +147,13 @@ func (s *Server) Handle(pattern string, h Handler) {
 		for {
 			msgType, data, err := c.ReadMessage()
 			if err != nil {
-				logger.Error("ReadMessage error", err)
+				logger.Errorf("ReadMessage error: %v", err)
 				return
 			}
 
 			err = h.Receive(c, msgType, data)
 			if err != nil {
-				logger.Error("Receive error", err)
+				logger.Errorf("Receive error: %v", err)
 				return
 			}
 			logger.Tracef("Receive %d bytes", len(data))
