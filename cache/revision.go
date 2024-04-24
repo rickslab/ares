@@ -3,11 +3,12 @@ package cache
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/gomodule/redigo/redis"
 )
 
-type GetRevisionHandler func(id int64) (int64, error)
+type GetRevisionHandler func(ids ...int64) (int64, error)
 
 type Revision struct {
 	name        string
@@ -26,56 +27,34 @@ func (r *Revision) Close() {
 	r.conn.Close()
 }
 
-func (r *Revision) existRevision(id int64) (bool, error) {
-	return redis.Bool(r.conn.Do("EXISTS", id))
-}
-
-func (r *Revision) mgetRevision(ids []int64) ([]int64, error) {
-	vals := make([]any, len(ids))
+func (r *Revision) getKey(ids ...int64) string {
+	strs := make([]string, len(ids))
 	for i, id := range ids {
-		vals[i] = id
+		strs[i] = strconv.FormatInt(id, 10)
 	}
-
-	strs, err := redis.Strings(r.conn.Do("MGET", vals...))
-	if err != nil {
-		return nil, err
-	}
-	result := make([]int64, len(strs))
-	for i, str := range strs {
-		if str == "" {
-			result[i] = -1 // nil items turn to -1
-		} else {
-			n, err := strconv.ParseInt(str, 10, 64)
-			if err != nil {
-				return nil, err
-			}
-			result[i] = n
-		}
-	}
-	return result, nil
+	return strings.Join(strs, ":")
 }
 
-func (r *Revision) incrRevision(id int64) (int64, error) {
-	return redis.Int64(r.conn.Do("INCR", id))
+func (r *Revision) existRevision(key string) (bool, error) {
+	return redis.Bool(r.conn.Do("EXISTS", key))
 }
 
-func (r *Revision) setRevision(id int64, revision int64) error {
-	_, err := r.conn.Do("SET", id, revision)
+func (r *Revision) incrRevision(key string) (int64, error) {
+	return redis.Int64(r.conn.Do("INCR", key))
+}
+
+func (r *Revision) setRevision(key string, revision int64) error {
+	_, err := r.conn.Do("SET", key, revision)
 	return err
 }
 
-func (r *Revision) setRevisionNX(id int64, revision int64) error {
-	_, err := r.conn.Do("SET", id, revision, "NX")
+func (r *Revision) setRevisionNX(key string, revision int64) error {
+	_, err := r.conn.Do("SET", key, revision, "NX")
 	return err
 }
 
-func (r *Revision) DelRevision(id int64) error {
-	_, err := r.conn.Do("DEL", id)
-	return err
-}
-
-func (r *Revision) nextRevision(id int64) (int64, error) {
-	exists, err := r.existRevision(id)
+func (r *Revision) nextRevision(key string) (int64, error) {
+	exists, err := r.existRevision(key)
 	if err != nil {
 		return 0, err
 	}
@@ -83,11 +62,18 @@ func (r *Revision) nextRevision(id int64) (int64, error) {
 		return 0, nil
 	}
 
-	return r.incrRevision(id)
+	return r.incrRevision(key)
 }
 
-func (r *Revision) NextRevision(id int64) (int64, error) {
-	rev, err := r.nextRevision(id)
+func (r *Revision) DelRevision(ids ...int64) error {
+	key := r.getKey(ids...)
+	_, err := r.conn.Do("DEL", key)
+	return err
+}
+
+func (r *Revision) NextRevision(ids ...int64) (int64, error) {
+	key := r.getKey(ids...)
+	rev, err := r.nextRevision(key)
 	if err != nil {
 		return 0, err
 	}
@@ -95,7 +81,7 @@ func (r *Revision) NextRevision(id int64) (int64, error) {
 		return rev, nil
 	}
 
-	m := NewMutex(fmt.Sprintf("NextRevision:%s:%d", r.name, id))
+	m := NewMutex(fmt.Sprintf("NextRevision:%s:%s", r.name, key))
 	defer m.Close()
 
 	err = m.Lock()
@@ -104,7 +90,7 @@ func (r *Revision) NextRevision(id int64) (int64, error) {
 	}
 	defer m.Unlock()
 
-	rev, err = r.nextRevision(id)
+	rev, err = r.nextRevision(key)
 	if err != nil {
 		return 0, err
 	}
@@ -112,33 +98,12 @@ func (r *Revision) NextRevision(id int64) (int64, error) {
 		return rev, nil
 	}
 
-	rev, err = r.getRevision(id)
+	rev, err = r.getRevision(ids...)
 	if err != nil {
 		return 0, err
 	}
 	rev++
 
-	_ = r.setRevision(id, rev)
+	_ = r.setRevision(key, rev)
 	return rev, nil
-}
-
-func (r *Revision) FindRevision(ids []int64) ([]int64, error) {
-	revisions, err := r.mgetRevision(ids)
-	if err != nil {
-		return nil, err
-	}
-
-	for i, rev := range revisions {
-		id := ids[i]
-		if rev == -1 {
-			rev, err = r.getRevision(id)
-			if err != nil {
-				return nil, err
-			}
-
-			_ = r.setRevisionNX(id, rev)
-			revisions[i] = rev
-		}
-	}
-	return revisions, nil
 }
