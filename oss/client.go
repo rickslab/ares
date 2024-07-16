@@ -27,9 +27,9 @@ func initOssClient(name string) (*oss.Client, error) {
 		return nil, err
 	}
 
-	conf := config.YamlEnv().Sub(fmt.Sprintf("oss.%s", name))
+	endpoint := config.YamlEnv().GetString(fmt.Sprintf("oss.%s", name))
 
-	cli, err = oss.New(conf.GetString("endpoint"), "", "",
+	cli, err = oss.New(endpoint, "", "",
 		oss.SetCredentialsProvider(&provider),
 		oss.Timeout(10, 60),
 	)
