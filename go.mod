@@ -43,6 +43,7 @@ require (
 	cloud.google.com/go/longrunning v0.5.1 // indirect
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
+	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/bketelsen/crypt v0.0.4 // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
