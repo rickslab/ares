@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	rotationTime  = 1 * time.Hour
-	rotationCount = 3 * 24
+	rotationTime  = 24 * time.Hour
+	rotationCount = 180 // 网安要求保存6个月
 )
 
 type FileRotateHook struct {
@@ -43,7 +43,7 @@ func NewFileRotateHook(fileName string, levels ...logrus.Level) (*FileRotateHook
 
 	filePath := path.Join(logPath, fileName)
 	writer, err := rotatelogs.New(
-		filePath+".%Y%m%d%H%M",
+		filePath+".%Y%m%d",
 		rotatelogs.WithLinkName(filePath),
 		rotatelogs.WithRotationTime(rotationTime),
 		rotatelogs.WithRotationCount(rotationCount),
